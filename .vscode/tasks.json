@@ -1,0 +1,175 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake clean",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Windows\\System32\\bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                },
+            },
+            "command": "rm",
+            "args": [
+                "-rf",
+                "./build/{.[!.g],..?}*"
+            ],
+            "presentation": {
+                "reveal": "never"
+            },
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake clang++ Debug",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Windows\\System32\\bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_TOOLCHAIN_FILE=$(cat",
+                "~/.vcpkg/vcpkg.path.txt)/scripts/buildsystems/vcpkg.cmake",
+                "-DCMAKE_CXX_COMPILER=clang++",
+                "-UCLANG_TIDY",
+                "-DCLANG_TIDY=ON",
+                "-G",
+                "Ninja",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "..",
+                "&&",
+                "ninja",
+                "|",
+                "perl",
+                "../scripts/ninja_filter.pl"
+            ],
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "never"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "CMake clang++ Release",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Windows\\System32\\bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_TOOLCHAIN_FILE=$(cat",
+                "~/.vcpkg/vcpkg.path.txt)/scripts/buildsystems/vcpkg.cmake",
+                "-DCMAKE_CXX_COMPILER=clang++",
+                "-UCLANG_TIDY",
+                "-G",
+                "Ninja",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "..",
+                "&&",
+                "ninja",
+                "|",
+                "perl",
+                "../scripts/ninja_filter.pl"
+            ],
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "never"
+            },
+            "group": "build"
+        },
+        {
+            "label": "CMake gcc Debug",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Windows\\System32\\bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_TOOLCHAIN_FILE=$(cat",
+                "~/.vcpkg/vcpkg.path.txt)/scripts/buildsystems/vcpkg.cmake",
+                "-DCMAKE_CXX_COMPILER=g++",
+                "-G",
+                "Ninja",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "..",
+                "&&",
+                "ninja",
+                "|",
+                "perl",
+                "../scripts/ninja_filter.pl"
+            ],
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "reveal": "never"
+            },
+            "group": "build"
+        },
+        {
+            "label": "CTest",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "C:\\Windows\\System32\\bash.exe",
+                        "args": [
+                            "-c"
+                        ]
+                    }
+                }
+            },
+            "command": "ctest",
+            "args": [],
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "dependsOn": "CMake clang++ Release"
+        }
+    ]
+}
