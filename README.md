@@ -72,9 +72,9 @@ The prepared tasks run [CMake](https://cmake.org) and the build system.
 *   `CMake clang++ Debug`: run CMake and build with [clang++](https://clang.llvm.org), [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) and `Debug`
 *   `CMake clang++ Release`: run CMake and build with [clang++](https://clang.llvm.org) and `Release`
 *   `CMake gcc Debug`: run CMake and build with [gcc](https://gcc.gnu.org) and `Debug`
+*   `CTest`: run ctest
 
 Edit `args` key in `.vscode/tasks.json` if you want to customize options.
-*   `CTest`: run ctest
 
 ```json
             "args": [
