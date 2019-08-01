@@ -19,7 +19,7 @@
             "command": "rm",
             "args": [
                 "-rf",
-                "./build/{.[!.g],..?}*"
+                "./build/{,.[!.g],..?}*"
             ],
             "presentation": {
                 "reveal": "never"
