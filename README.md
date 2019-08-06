@@ -207,16 +207,24 @@ Semantic highlighting is also enabled here,
     "ccls.highlighting.enabled.types": true,
 ```
 
+If you prefer VSCode built-in source code folding to [ccls](https://github.com/MaskRay/ccls)'s, disable `foldingRangeProvider` in initialization option
+
+```json
+    "ccls.launch.args": [
+        "--init={\"capabilities\": {\"foldingRangeProvider\": false}}"
+    ],
+```
+
 Working with [CMake](https://cmake.org), `ccls.misc.compilationDatabaseDirectory` specifies a directory where `compile_commands.json` is output.
 
 ```json
-    "ccls.misc.compilationDatabaseCommand": "scripts/compile_commands_filter.py",
+    "ccls.misc.compilationDatabaseDirectory": "build",
 ```
 
  Additionally for CUDA project, `scripts/compile_commands_filter.py` converts `nvcc` commands and options to those of `clang++` options.
 
 ```json
-    "ccls.misc.compilationDatabaseDirectory": "build",
+    "ccls.misc.compilationDatabaseCommand": "scripts/compile_commands_filter.py",
     "files.associations": {
         "*.cu": "cpp"
     }
