@@ -18,6 +18,9 @@
     "ccls.highlighting.enabled.templateParameters": true,
     "ccls.highlighting.enabled.typeAliases": true,
     "ccls.highlighting.enabled.types": true,
+    "ccls.launch.args": [
+        "--init={\"capabilities\": {\"foldingRangeProvider\": false}}"
+    ],
     "ccls.misc.compilationDatabaseCommand": "scripts/compile_commands_filter.py",
     "ccls.misc.compilationDatabaseDirectory": "build",
     "files.associations": {
