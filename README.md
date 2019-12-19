@@ -1,22 +1,22 @@
 # VSCode C/C++ project template
 
-Project template for VSCode C/C++ development with Remotes (WSL/SSH), CMake, ccls, and CUDA.
+Project template for VSCode C/C++ development with Remotes (WSL/SSH), CMake, language server and CUDA.
 
 - [VSCode C/C++ project template](#vscode-cc-project-template)
   - [Target](#target)
   - [Packages](#packages)
     - [VSCode extensions](#vscode-extensions)
   - [Sample Project](#sample-project)
-  - [Settings](#settings)
-    - [Build commands](#build-commands)
-    - [C/C++ extension](#cc-extension)
-    - [ccls extension](#ccls-extension)
-    - [Debug](#debug)
+  - [VSCode settings](#vscode-settings)
+    - [C/C++](#cc)
+    - [ccls](#ccls)
+    - [clangd](#clangd)
+    - [CMake Tools](#cmake-tools)
 
 ## Target
 
 *   [Visual Studio Code](https://code.visualstudio.com)
-*   WSL or [Remote SSH/WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+*   [Remote SSH or WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
 
 ## Packages
 
@@ -26,7 +26,6 @@ Compilers:
 
 *   [Clang](https://clang.llvm.org)
 *   [CMake](https://cmake.org) (ver 3.13 or above)
-*   Make or [Ninja](https://github.com/ninja-build/ninja)
 
 Libraries:
 
@@ -35,9 +34,12 @@ Libraries:
 
 Options:
 
-*   [ccls](https://github.com/MaskRay/ccls) (C/C++/ObjC language server)
+*   [ccls](https://github.com/MaskRay/ccls) (C/C++ language server)
     *   for MacOS/Linux(WSL): `brew install ccls`
     *   for Windows: build by yourself ([the guide](https://cxuesong.com/archives/1067))
+*   [clangd](https://clang.llvm.org/extra/clangd/) (C/C++ language server)
+*   [conmpdb](https://github.com/Sarcasm/compdb) (compilation database generator)
+    *   `pip install compdb`
 *   [vcpkg](https://github.com/microsoft/vcpkg) (C/C++ package manager)
 *   [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
 *   CUDA (Linux)
@@ -46,104 +48,29 @@ Options:
 
 *   [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 *   [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+*   [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
 
 Options:
 
 *   [ccls](https://marketplace.visualstudio.com/items?itemName=ccls-project.ccls)
+*   [vscode-clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
 
 
 ## Sample Project
 
-This repository contains a CMake project for sample. The sample project is consisting of
+This repository contains a CMake project for the sample. The sample project is consisting of
 
-*   `header_lib_sample`: example of header only library using [Boost](https://www.boost.org)
-*   `static_lib_sample`: example of static library using [Boost](https://www.boost.org)
-*   `src`: main project linking aboves
+*   `header_lib_sample`: example of a header-only library using [Boost](https://www.boost.org)
+*   `static_lib_sample`: example of a static library using [Boost](https://www.boost.org)
+*   `src`: main project linking above libraries
 *   `cuda_sample`: example of CUDA project (disabled default)
 *   `test`: Test projects using [Google Test](https://github.com/google/googletest) for libraries
 
-## Settings
+## VSCode settings
 
-### Build commands
+### [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 
-The prepared tasks run [CMake](https://cmake.org) and the build system.
-
-*   `CMake clean`: cleanup `./build` directory
-*   `CMake clang++ Debug`: run CMake and build with [clang++](https://clang.llvm.org), [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) and `Debug`
-*   `CMake clang++ Release`: run CMake and build with [clang++](https://clang.llvm.org) and `Release`
-*   `CMake gcc Debug`: run CMake and build with [gcc](https://gcc.gnu.org) and `Debug`
-*   `CTest`: run ctest
-
-Edit `args` key in `.vscode/tasks.json` if you want to customize options.
-
-```json
-            "args": [
-                "-DCMAKE_TOOLCHAIN_FILE=$(cat",
-                "~/.vcpkg/vcpkg.path.txt)/scripts/buildsystems/vcpkg.cmake",
-                "-DCMAKE_CXX_COMPILER=clang++",
-                "-UCLANG_TIDY",
-                "-DCLANG_TIDY=ON",
-                "-G",
-                "Ninja",
-                "-DCMAKE_BUILD_TYPE=Debug",
-                "..",
-                "&&",
-                "ninja",
-                "|",
-                "perl",
-                "../scripts/ninja_filter.pl"
-            ],
-```
-
-Use [vcpkg](https://github.com/microsoft/vcpkg) as CMake tool chain here,
-
-```json
-                "-DCMAKE_TOOLCHAIN_FILE=$(cat",
-                "~/.vcpkg/vcpkg.path.txt)/scripts/buildsystems/vcpkg.cmake",
-```
-
-Use [clang++](https://clang.llvm.org) as C++ compiler,
-
-```json
-                "-DCMAKE_CXX_COMPILER=clang++",
-```
-
-Enable running [clang-tidy](https://clang.llvm.org/extra/clang-tidy/), (you need to put `.clang-tidy` file on root),
-
-```json
-                "-UCLANG_TIDY",
-                "-DCLANG_TIDY=ON",
-```
-
-Use `Ninja` as build system and build automatically,
-
-```json
-                "-G",
-                "Ninja",
-                "&&",
-                "ninja",
-```
-
-If you want to generate 'Makefile', you simply remove '-G' options and pass to `make`.
-
-The last pipe is a little trick,
-
-```json
-                "|",
-                "perl",
-                "../scripts/ninja_filter.pl"
-```
-
-This script has two roles.
-
-*   convert absolute (Linux) file path to the relative path which can be interpreted also on Windows
-*   cache the output and print out the same previous build
-
-When the source codes are not changed, a build tool may not output anything. For this case, the problem tab on VSCode should keep the same outputs because it will be refreshed when a new task is executed.
-
-### [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) extension
-
-If you use external headers, you need to add the path in `c_cpp_properties.json`
+If you use external headers, you need to add the include path in `c_cpp_properties.json`
 
 ```json
 {
@@ -172,70 +99,40 @@ If you use external headers, you need to add the path in `c_cpp_properties.json`
 }
 ```
 
-The above example adds the path to installed packages in [vcpkg](https://github.com/microsoft/vcpkg) to `includePath` key. Note that `includePath` accepts both Windows and Linux paths for WSL environment.
+The above example adds the path to installed packages in [vcpkg](https://github.com/microsoft/vcpkg) to `includePath` key.
 
-### [ccls](https://marketplace.visualstudio.com/items?itemName=ccls-project.ccls) extension
+### [ccls](https://marketplace.visualstudio.com/items?itemName=ccls-project.ccls)
 
-[ccls](https://github.com/MaskRay/ccls) is a lightweight language server for C/C++, ObjC (and CUDA partially). [ccls](https://marketplace.visualstudio.com/items?itemName=ccls-project.ccls) is faster and smarter than [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) intellisense.
-
-However, `ccls` extension does not provide the debugging function. The following settings are applied to disable [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) extensions intellisense to avoid overlaps of such features in `ccls`.
-
+You may have to set the patn to Clang resource directory `ccls.clang.resourceDir` in `settings.json`, e.g.
 ```json
-    "C_Cpp.autocomplete": "Disabled",
-    "C_Cpp.errorSquiggles": "Disabled",
-    "C_Cpp.formatting": "Disabled",
-    "C_Cpp.intelliSenseEngine": "Disabled",
+{
+    "ccls.clang.resourceDir": "/home/linuxbrew/.linuxbrew/Cellar/llvm/9.0.0_1/lib/clang/9.0.0/"
+}
+```
+See https://github.com/MaskRay/ccls/wiki/Install#clang-resource-directory
+
+### [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+
+If you prefer clangd to ccls, remove to enable semantic highlighting settings here,
+```json
+{
+    "clangd.semanticHighlighting": false
+}
 ```
 
-Semantic highlighting is also enabled here,
+### [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
+
+The custom toolchain using clang++ is added to `cmake-kits.json`. Set the path to toolchain file if you need,
 
 ```json
-    "ccls.highlighting.enabled.enumConstants": true,
-    "ccls.highlighting.enabled.enums": true,
-    "ccls.highlighting.enabled.freeStandingFunctions": true,
-    "ccls.highlighting.enabled.freeStandingVariables": true,
-    "ccls.highlighting.enabled.globalVariables": true,
-    "ccls.highlighting.enabled.macros": true,
-    "ccls.highlighting.enabled.memberFunctions": true,
-    "ccls.highlighting.enabled.memberVariables": true,
-    "ccls.highlighting.enabled.namespaces": true,
-    "ccls.highlighting.enabled.parameters": true,
-    "ccls.highlighting.enabled.staticMemberFunctions": true,
-    "ccls.highlighting.enabled.staticMemberVariables": true,
-    "ccls.highlighting.enabled.templateParameters": true,
-    "ccls.highlighting.enabled.typeAliases": true,
-    "ccls.highlighting.enabled.types": true,
-```
-
-If you prefer VSCode built-in source code folding to [ccls](https://github.com/MaskRay/ccls)'s, disable `foldingRangeProvider` in initialization option
-
-```json
-    "ccls.launch.args": [
-        "--init={\"capabilities\": {\"foldingRangeProvider\": false}}"
-    ],
-```
-
-Working with [CMake](https://cmake.org), `ccls.misc.compilationDatabaseDirectory` specifies a directory where `compile_commands.json` is output.
-
-```json
-    "ccls.misc.compilationDatabaseDirectory": "build",
-```
-
- Additionally for CUDA project, `scripts/compile_commands_filter.py` converts `nvcc` commands and options to those of `clang++` options.
-
-```json
-    "ccls.misc.compilationDatabaseCommand": "scripts/compile_commands_filter.py",
-    "files.associations": {
-        "*.cu": "cpp"
+[
+    {
+        "name": "clang++",
+        "toolchainFile": "/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "compilers": {
+            "C": "clang",
+            "CXX": "clang++"
+        }
     }
-```
-
-For `ccls` on windows, the current settings cannot analyze WSL paths written in `compile_commands.json`. You may have to put `.ccls` (see [ccls wiki](https://github.com/MaskRay/ccls/wiki/Project-Setup#ccls-file)).
-
-### Debug
-
-In `launch.json`, put the program path to `program` key,
-
-```json
-            "program": "./build/Debug/bin/cmake_sample_main",
+]
 ```
