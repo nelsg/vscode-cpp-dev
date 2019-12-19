@@ -9,7 +9,7 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 set(
   CMAKE_CUDA_FLAGS
-  "-gencode arch=compute_61,code=sm_61 -gencode arch=compute_70,code=sm_70 -lineinfo -use_fast_math"
+  "-gencode arch=compute_70,code=sm_70 -lineinfo -use_fast_math -Xptxas=-v --compiler-options -Wall --compiler-options -Wextra"
   )
 
 set(CMAKE_CUDA_FLAGS_RELEASE -O2)
