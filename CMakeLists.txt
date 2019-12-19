@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.10.0 FATAL_ERROR)
 
 #
+# PROJECT
+#
+
+project(cmake_sample_all CXX)
+
+#
 # STATIC VARIABLES
 #
 
@@ -63,7 +69,6 @@ elseif(UNIX AND NOT APPLE)
   endif()
   set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
   set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-  # set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native")
   set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -Wconversion")
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
@@ -71,6 +76,13 @@ elseif(UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
   endif()
 endif()
+
+#
+# SANITIZER
+#
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers-cmake/cmake"
+                      ${CMAKE_MODULE_PATH})
+find_package(Sanitizers)
 
 #
 # TIDY
@@ -97,10 +109,50 @@ else()
 endif()
 
 #
-# PROJECT
+# EXPORT COMPILE COMMANDS
 #
-
-project(cmake_sample_all CXX)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if(${CMAKE_EXPORT_COMPILE_COMMANDS} STREQUAL ON)
+  add_custom_target(gen_compile_commands ALL
+                    COMMENT "Generating compile_commands.json")
+  add_custom_command(TARGET gen_compile_commands PRE_BUILD
+                     COMMAND ${CMAKE_COMMAND}
+                             -E
+                             remove
+                             ${CMAKE_SOURCE_DIR}/compile_commands.json)
+  add_custom_command(TARGET gen_compile_commands PRE_BUILD
+                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                     COMMAND sed
+                             -i
+                             -e
+                             's/nvcc/clang++/g'
+                             -e
+                             's/-x cuda/-x cu/g'
+                             -e
+                             's/-x cu/-x cuda/g'
+                             ${CMAKE_BINARY_DIR}/compile_commands.json
+                     COMMENT "Replacing strings")
+  find_program(COMPDB compdb)
+  if(COMPDB)
+    add_custom_command(TARGET gen_compile_commands PRE_BUILD
+                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       COMMAND ${COMPDB}
+                               list
+                               >
+                               ${CMAKE_SOURCE_DIR}/compile_commands.json
+                       COMMENT "Running compdb")
+  else()
+    message(AUTHOR_WARNING "'compdb' not found")
+    add_custom_command(TARGET gen_compile_commands PRE_BUILD
+                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       COMMAND ${CMAKE_COMMAND}
+                               -E
+                               create_symlink
+                               ${CMAKE_BINARY_DIR}/compile_commands.json
+                               ${CMAKE_SOURCE_DIR}/compile_commands.json
+                       COMMENT "Creating symbolic link")
+  endif()
+endif()
 
 #
 # SUBDIRECTORIES

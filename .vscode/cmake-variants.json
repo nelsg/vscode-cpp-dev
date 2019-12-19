@@ -1,0 +1,96 @@
+{
+   "buildType": {
+      "default": "debug",
+      "choices": {
+         "debug": {
+            "short": "Debug",
+            "long": "Emit debug information",
+            "buildType": "Debug"
+         },
+         "release": {
+            "short": "Release",
+            "long": "Optimize generated code",
+            "buildType": "Release"
+         }
+      }
+   },
+   "clangTidy": {
+      "default": "OFF",
+      "choices": {
+         "ON": {
+            "short": "Clang-Tidy",
+            "long": "Enable to run Clang-Tidy",
+            "settings": {
+               "CLANG_TIDY": true
+            }
+         },
+         "OFF": {
+            "short": "No Clang-Tidy",
+            "long": "Disable to run Clang-Tidy",
+            "settings": {
+               "CLANG_TIDY": false
+            }
+         }
+      }
+   },
+   "AMTsanitizers": {
+      "default": "OFF",
+      "choices": {
+         "Asan": {
+            "short": "Asan",
+            "long": "Enable address sanitizer",
+            "settings": {
+               "SANITIZE_ADDRESS": true,
+               "SANITIZE_MEMORY": false,
+               "SANITIZE_THREAD": false
+            }
+         },
+         "Tsan": {
+            "short": "Tsan",
+            "long": "Enable thread sanitizer",
+            "settings": {
+               "SANITIZE_THREAD": true,
+               "SANITIZE_MEMORY": false,
+               "SANITIZE_ADDRESS": false
+            }
+         },
+         "Msan": {
+            "short": "Msan",
+            "long": "Enable memory sanitizer",
+            "settings": {
+               "SANITIZE_MEMORY": true,
+               "SANITIZE_ADDRESS": false,
+               "SANITIZE_THREAD": false
+            }
+         },
+         "OFF": {
+            "short": "No AMTsan",
+            "long": "Disable address/memory/thread sanitizers",
+            "settings": {
+               "SANITIZE_ADDRESS": false,
+               "SANITIZE_MEMORY": false,
+               "SANITIZE_THREAD": false
+            }
+         }
+      }
+   },
+   "UBsanitizer": {
+      "default": "OFF",
+      "choices": {
+         "ON": {
+            "short": "UBsan",
+            "long": "Enable undefined behavior sanitizer",
+            "settings": {
+               "SANITIZE_UNDEFINED": true
+            }
+         },
+         "OFF": {
+            "short": "No UBsan",
+            "long": "Disable undefined behavior sanitizer",
+            "settings": {
+               "SANITIZE_UNDEFINED": false
+            }
+         }
+      }
+   }
+}
