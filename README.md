@@ -38,7 +38,7 @@ Options:
     *   for MacOS/Linux(WSL): `brew install ccls`
     *   for Windows: build by yourself ([the guide](https://cxuesong.com/archives/1067))
 *   [clangd](https://clang.llvm.org/extra/clangd/) (C/C++ language server)
-*   [conmpdb](https://github.com/Sarcasm/compdb) (compilation database generator)
+*   [compdb](https://github.com/Sarcasm/compdb) (compilation database generator)
     *   `pip install compdb`
 *   [vcpkg](https://github.com/microsoft/vcpkg) (C/C++ package manager)
 *   [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
@@ -70,7 +70,7 @@ This repository contains a CMake project for the sample. The sample project is c
 
 ### [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
 
-If you use external headers, you need to add the include path in `c_cpp_properties.json`
+If you use external headers, you need to add the include path in `c_cpp_properties.json`.
 
 ```json
 {
@@ -109,7 +109,7 @@ You may have to set the patn to Clang resource directory `ccls.clang.resourceDir
     "ccls.clang.resourceDir": "/home/linuxbrew/.linuxbrew/Cellar/llvm/9.0.0_1/lib/clang/9.0.0/"
 }
 ```
-See https://github.com/MaskRay/ccls/wiki/Install#clang-resource-directory
+See https://github.com/MaskRay/ccls/wiki/Install#clang-resource-directory.
 
 ### [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
 
