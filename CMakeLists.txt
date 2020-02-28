@@ -170,7 +170,8 @@ add_subdirectory(header_lib_sample)
 # static library project
 add_subdirectory(static_lib_sample)
 
-# CUDA project (uncomment to enable CUDA build) add_subdirectory(cuda_sample)
+# CUDA project (uncomment to enable CUDA build)
+# add_subdirectory(cuda_sample)
 
 # main project
 add_subdirectory(src)
