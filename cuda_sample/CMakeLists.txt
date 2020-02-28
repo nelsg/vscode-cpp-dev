@@ -9,11 +9,10 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 set(
   CMAKE_CUDA_FLAGS
-  "-gencode arch=compute_70,code=sm_70 -lineinfo -use_fast_math -Xptxas=-v --compiler-options -Wall --compiler-options -Wextra"
+  "-gencode arch=compute_70,code=sm_70 -lineinfo -use_fast_math -Xptxas=-v -Xcompiler=\"${CMAKE_CXX_FLAGS}\""
   )
-
-set(CMAKE_CUDA_FLAGS_RELEASE -O2)
-set(CMAKE_CUDA_FLAGS_DEBUG -g)
+set(CMAKE_CUDA_FLAGS_DEBUG "-Xcompiler=\"${CMAKE_CXX_FLAGS_DEBUG}\"")
+set(CMAKE_CUDA_FLAGS_RELEASE "-Xcompiler=\"${CMAKE_CXX_FLAGS_RELEASE}\"")
 
 # CUDA SOURCES
 file(GLOB CU_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./src/*.c*)

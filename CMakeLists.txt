@@ -51,11 +51,15 @@ if(MSVC)
   set(CMAKE_MSVC_PARALLEL_ENABLE ON)
   set(
     CMAKE_CXX_FLAGS
-    "/D \"_CONSOLE\" /D \"UNICODE\" /D \"_UNICODE\" /source-charset:utf-8 /permissive- /MP /GS /Zc:rvalueCast /W3 /Zc:wchar_t /sdl /Zc:inline /fp:precise /errorReport:prompt /WX- /Zc:forScope /Gd /FC /EHsc /diagnostics:classic"
+    "/source-charset:utf-8 /permissive- /MP /GS /Zc:rvalueCast /W4 /Zc:wchar_t /sdl /Zc:inline /fp:precise /errorReport:prompt /WX- /Zc:forScope /Gd /FC /EHsc /diagnostics:classic"
     )
-  set(CMAKE_CXX_FLAGS_DEBUG "/D\"_DEBUG\" /JMC /ZI /Od /RTC1 /MTd /FAcs")
+  # replace /MT and /MTd by /MDd /MDd for dynamic linking, respectively
+  set(CMAKE_CXX_FLAGS_DEBUG "/JMC /ZI /Od /RTC1 /FAcs /MTd")
   set(CMAKE_CXX_FLAGS_RELEASE "/GL /Gy /Zi /Gm- /O2 /Oi /MT")
-
+  add_definitions(/D_CONSOLE /DUNICODE /D_UNICODE)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(/D_DEBUG)
+  endif()
   set(CMAKE_EXE_LINKER_FLAGS
       "/NXCOMPAT /DYNAMICBASE /DEBUG /ERRORREPORT:PROMPT")
   set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/INCREMENTAL")
@@ -69,12 +73,11 @@ elseif(UNIX AND NOT APPLE)
   endif()
   set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g3")
   set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-  set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -Wconversion")
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")
-  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
-  endif()
+  # set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native")
+  set(
+    CMAKE_CXX_FLAGS
+    "-Wall -Wextra -Wcast-align -Wcast-qual -Wc++17-compat -Wdelete-non-virtual-dtor -Weffc++ -Wold-style-cast -Woverloaded-virtual -Wpointer-arith -Wfloat-equal -Winit-self -Wredundant-decls -Wconversion -Wshadow -Wsign-promo -Wswitch-default -Wswitch-enum -Wvariadic-macros -Wwrite-strings -Wno-unknown-pragmas"
+    )
 endif()
 
 #
@@ -120,18 +123,21 @@ if(${CMAKE_EXPORT_COMPILE_COMMANDS} STREQUAL ON)
                              -E
                              remove
                              ${CMAKE_SOURCE_DIR}/compile_commands.json)
-  add_custom_command(TARGET gen_compile_commands PRE_BUILD
-                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                     COMMAND sed
-                             -i
-                             -e
-                             's/nvcc/clang++/g'
-                             -e
-                             's/-x cuda/-x cu/g'
-                             -e
-                             's/-x cu/-x cuda/g'
-                             ${CMAKE_BINARY_DIR}/compile_commands.json
-                     COMMENT "Replacing strings")
+  find_program(SED sed)
+  if(SED)
+    add_custom_command(TARGET gen_compile_commands PRE_BUILD
+                       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                       COMMAND sed
+                               -i
+                               -e
+                               's/nvcc/clang++/g'
+                               -e
+                               's/-x cuda/-x cu/g'
+                               -e
+                               's/-x cu/-x cuda/g'
+                               ${CMAKE_BINARY_DIR}/compile_commands.json
+                       COMMENT "Replacing strings")
+  endif()
   find_program(COMPDB compdb)
   if(COMPDB)
     add_custom_command(TARGET gen_compile_commands PRE_BUILD
@@ -164,8 +170,7 @@ add_subdirectory(header_lib_sample)
 # static library project
 add_subdirectory(static_lib_sample)
 
-# CUDA project (uncomment to enable CUDA build)
-#add_subdirectory(cuda_sample)
+# CUDA project (uncomment to enable CUDA build) add_subdirectory(cuda_sample)
 
 # main project
 add_subdirectory(src)
