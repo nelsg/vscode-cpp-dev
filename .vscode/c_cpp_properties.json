@@ -6,7 +6,7 @@
             "compilerPath": "/usr/bin/clang++",
             "includePath": [
                 "${workspaceRoot}/**",
-                "/path/to/vcpkg/installed/x64-linux/include"
+                "PATH_TO_VCPKG/installed/x64-linux/include"
             ],
             "defines": [],
             "browse": {
