@@ -1,138 +1,126 @@
-# VSCode C/C++ project template
+# CMake C++/CUDA template for Visual Studio Code
 
-Project template for VSCode C/C++ development with Remotes (WSL/SSH), CMake, language server and CUDA.
+This CMake C++ template includes projects:
 
-- [VSCode C/C++ project template](#vscode-cc-project-template)
-  - [Target](#target)
-  - [Packages](#packages)
-    - [VSCode extensions](#vscode-extensions)
-  - [Sample Project](#sample-project)
-  - [VSCode settings](#vscode-settings)
-    - [C/C++](#cc)
-    - [ccls](#ccls)
-    - [clangd](#clangd)
-    - [CMake Tools](#cmake-tools)
+*   C++ header only library: `header_lib_sample`.
+*   C++ static library: `static_lib_sample`.
+*   Executable: `src`.
+*   Unit tests with [Google Test](https://github.com/google/googletest): `test`.
+*   (option) CUDA executable: `cuda_sample`.
 
-## Target
+The pre-configured VSCode settings with extensions enable a modern development environment with C++17:
 
-*   [Visual Studio Code](https://code.visualstudio.com)
-*   [Remote SSH or WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+*   Intellisense and clang-format with [ccls](https://github.com/MaskRay/ccls).
+*   Package manager with [vcpkg](https://github.com/microsoft/vcpkg).
+*   Linter with [Clang-Tidy](https://clang.llvm.org/extra/clang-tidy/).
+*   Code debugging with [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools).
+*   GUI-selectable CMake settings with [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools).
+*   Sanitizer supports with [sanitizers-cmake](https://github.com/arsenm/sanitizers-cmake).
 
-## Packages
+## Usage
 
-The following packages are assumed to be already installed on **Linux/WSL**. 
+### Prerequisites
 
-Compilers:
+*   Visual Studio Code
+*   Linux/WSL
+*   [option] CUDA
 
-*   [Clang](https://clang.llvm.org)
-*   [CMake](https://cmake.org) (ver 3.13 or above)
+### Install [brew](https://docs.brew.sh/Homebrew-on-Linux) and packages
 
-Libraries:
+Install brew on Linux.
 
-*   [Google Test](https://github.com/google/googletest)
-*   [Boost](https://www.boost.org)
+```bash
+$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+```
 
-Options:
+Add Homebew to your `PATH`.
 
-*   [ccls](https://github.com/MaskRay/ccls) (C/C++ language server)
-    *   for MacOS/Linux(WSL): `brew install ccls`
-    *   for Windows: build by yourself ([the guide](https://cxuesong.com/archives/1067))
-*   [clangd](https://clang.llvm.org/extra/clangd/) (C/C++ language server)
-*   [compdb](https://github.com/Sarcasm/compdb) (compilation database generator)
-    *   `pip install compdb`
-*   [vcpkg](https://github.com/microsoft/vcpkg) (C/C++ package manager)
-*   [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
-*   CUDA (Linux)
+`~/.profile`
 
-### VSCode extensions
+```bash
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+```
 
-*   [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
-*   [Remote Development](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
+See [the documentation](https://docs.brew.sh/Homebrew-on-Linux) in details.
+
+Install packages.
+
+```bash
+$ brew install clang ccls cmake ninja
+```
+
+**Important!** Unlink gcc on brew.
+
+```bash
+$ brew unlink gcc
+```
+
+### Install [vcpkg](https://github.com/microsoft/vcpkg) and packages
+
+Before install packages with using vcpkg, set your compilers for safety for example:
+
+```bash
+$ export C=/home/linuxbrew/.linuxbrew/bin/clang
+$ export CXX=/home/linuxbrew/.linuxbrew/bin/clang++
+```
+
+Clone vcpkg.
+
+```bash
+$ git clone https://github.com/Microsoft/vcpkg.git
+```
+
+Install vcpkg.
+
+```bash
+$ cd vcpkg
+$ ./bootstrap-vcpkg.sh
+$ ./vcpkg integrate install
+```
+
+Install packages.
+
+```bash
+$ ./vcpkg install boost gtest
+```
+
+### Install VSCode extensions
+
+Install extensions in your VSCode. On Windows 10, you need to install followings with [Remote-WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) connected.
+
 *   [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
-
-Options:
-
 *   [ccls](https://marketplace.visualstudio.com/items?itemName=ccls-project.ccls)
-*   [vscode-clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+*   [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
+*   (option) [vscode-clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
+    *   Clang-tidy checks will be enabled for opened file.
 
+### Install other packages
 
-## Sample Project
+To generate `compile_commands.json` with header files, install [compdb](https://github.com/Sarcasm/compdb)
 
-This repository contains a CMake project for the sample. The sample project is consisting of
-
-*   `header_lib_sample`: example of a header-only library using [Boost](https://www.boost.org)
-*   `static_lib_sample`: example of a static library using [Boost](https://www.boost.org)
-*   `src`: main project linking above libraries
-*   `cuda_sample`: example of CUDA project (disabled default)
-*   `test`: Test projects using [Google Test](https://github.com/google/googletest) for libraries
-
-## VSCode settings
-
-### [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
-
-If you use external headers, you need to add the include path in `c_cpp_properties.json`.
-
-```json
-{
-    "configurations": [
-        {
-            "name": "WSL",
-            "intelliSenseMode": "clang-x64",
-            "compilerPath": "/usr/bin/clang++",
-            "includePath": [
-                "${workspaceRoot}/**",
-                "/path/to/vcpkg/installed/x64-linux/include"
-            ],
-            "defines": [],
-            "browse": {
-                "path": [
-                    "${workspaceFolder}"
-                ],
-                "limitSymbolsToIncludedHeaders": true,
-                "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db"
-            },
-            "cStandard": "c11",
-            "cppStandard": "c++17"
-        }
-    ],
-    "version": 4
-}
+```bash
+$ pip3 install compdb
 ```
 
-The above example adds the path to installed packages in [vcpkg](https://github.com/microsoft/vcpkg) to `includePath` key.
+### Configure the project
 
-### [ccls](https://marketplace.visualstudio.com/items?itemName=ccls-project.ccls)
-
-You may have to set the patn to Clang resource directory `ccls.clang.resourceDir` in `settings.json`, e.g.
-```json
-{
-    "ccls.clang.resourceDir": "/home/linuxbrew/.linuxbrew/Cellar/llvm/9.0.0_1/lib/clang/9.0.0/"
-}
-```
-See https://github.com/MaskRay/ccls/wiki/Install#clang-resource-directory.
-
-### [clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd)
-
-If you prefer clangd to ccls, remove to enable semantic highlighting settings here,
-```json
-{
-    "clangd.semanticHighlighting": false
-}
-```
-
-### [CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools)
-
-The custom toolchain using clang++ is added to `cmake-kits.json`. Set the path to toolchain file if you need,
-
-```json
-[
+1.  Clone this repository with `--recursive` to include submodule.
+2.  Open the project in VSCode.
+3.  Replace keyword `PATH_TO_VCPKG` by **your vcpkg path** in `.vscode`. Press `Ctrl + Shift + F` to open search view and replace. The files `.vscode/c_cpp_properties.json` and `.vscode/cmake-kits.json` will be found.
+4.  Add `ccls.clang.resourceDir` with **your LLVM directory** to `settings.json` e.g.
+    ```json
     {
-        "name": "clang++",
-        "toolchainFile": "/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "compilers": {
-            "C": "clang",
-            "CXX": "clang++"
-        }
+        "ccls.clang.resourceDir": "/home/linuxbrew/.linuxbrew/Cellar/llvm/9.0.0_1/lib/clang/9.0.0/"
+        // The version number depends                                     ~~~~~~~           ~~~~~
     }
-]
-```
+    ```
+5.  If you want to change the compilers from clang to gcc/g++, edit `.vscode/cmake-kits.json`.
+6.  If you want to compile CUDA project, uncomment `# add_subdirectory(cuda_sample)` in `CMakeLists.txt`
+
+### Build the project
+
+*   Select CMake configure on VSCode status bar: e.g. `Debug No Clang-Tidy No AMTsan No UBsan`
+*   Select CMake kits on VSCode status bar: e.g. `clang++`
+*   Press `F7` to configure and build the project.
+*   Press `F1` and run `ccls: Restart language server` to load `compile_commands.json` and ccls will restart.
+*   Press `F5` to debug the target executable.
