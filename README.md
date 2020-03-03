@@ -46,7 +46,7 @@ See [the documentation](https://docs.brew.sh/Homebrew-on-Linux) in details.
 Install packages.
 
 ```bash
-$ brew install clang ccls cmake ninja
+$ brew install ccls cmake ninja
 ```
 
 **Important!** Unlink gcc on brew.
@@ -60,7 +60,7 @@ $ brew unlink gcc
 Before install packages with using vcpkg, set your compilers for safety for example:
 
 ```bash
-$ export C=/home/linuxbrew/.linuxbrew/bin/clang
+$ export CC=/home/linuxbrew/.linuxbrew/bin/clang
 $ export CXX=/home/linuxbrew/.linuxbrew/bin/clang++
 ```
 
